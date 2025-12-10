@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import { MdEmail, MdLock } from "react-icons/md";
 import { motion } from "framer-motion";
+import { nodeAxios } from "../api";  // ✅ IMPORTANT
 
 function Login() {
   const navigate = useNavigate();
@@ -24,23 +24,22 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        "http://localhost:4000/api/auth/login",
-        formData
-      );
+      // ✅ Correct API call (NO localhost!)
+      const res = await nodeAxios.post("/api/auth/login", formData);
 
       login(res.data.user, res.data.token);
       navigate("/home");
     } catch (err) {
+      console.log("Login error:", err.response?.data);
       alert(err.response?.data?.message || "Login failed");
     }
+
     setLoading(false);
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#0A0F1E] via-[#0B1120] to-[#020617] text-white px-4">
 
-      {/* MAIN CARD 2 COLUMNS */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -48,7 +47,6 @@ function Login() {
         className="bg-white/10 backdrop-blur-lg border border-white/10 shadow-2xl rounded-3xl w-full max-w-6xl h-auto md:h-[550px] flex overflow-hidden"
       >
 
-        {/* LEFT FORM SECTION */}
         <div className="w-full md:w-1/2 p-10">
           <h2 className="text-4xl font-extrabold mb-2">Welcome Back 👋</h2>
           <p className="text-gray-300 text-sm mb-8">
@@ -83,10 +81,7 @@ function Login() {
             </div>
 
             <div className="text-right">
-              <button
-                type="button"
-                className="text-sm text-[#4C8BF5] hover:underline"
-              >
+              <button type="button" className="text-sm text-[#4C8BF5] hover:underline">
                 Forgot Password?
               </button>
             </div>
@@ -110,7 +105,6 @@ function Login() {
           </p>
         </div>
 
-        {/* RIGHT SIDE MESSAGE PANEL */}
         <div className="hidden md:flex w-1/2 bg-gradient-to-br from-[#122840] to-[#0A1B2F] p-12 text-white flex-col justify-center">
           <h1 className="text-3xl font-bold mb-6">
             Revolutionize Mental Health with <span className="text-[#4C8BF5]">AI</span>
